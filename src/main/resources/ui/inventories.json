@@ -1,19 +1,19 @@
 [
   {
+    "id": "main_menu",
     "title": "Main Menu",
-    "content": "main-menu.json"
+    "size": 54
   },
   {
+    "id": "configuration",
     "title": "Configuration",
-    "template": "NORMAL",
     "backButton": true,
-    "content": [
-      {
-        "item": "REDSTONE",
-        "name": "Change Lives",
-        "lore": "Change the default amount of lives",
-        "position": 20
-      }
-    ]
+    "size": 54
+  },
+  {
+    "id": "items_config",
+    "title": "Item Configuration",
+    "backButton": true,
+    "size": 54
   }
 ]

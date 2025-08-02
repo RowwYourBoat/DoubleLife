@@ -1,16 +1,17 @@
 # Toggle items.
 items:
   # Whether helmets should break passively when worn. Happens very quickly.
-  break-helmets: true
+  break_helmets: true
 
-  # If set to true, `clear-god-apples` is ignored.
-  clear-golden-apples: false
-  clear-god-apples: true
+  # 0 - Clear nothing
+  # 1 - Clear enchanted golden apples
+  # 2 - Clear normal and enchanted golden apples
+  clear_golden_apples: 1
 
   # You may disable potions by adding them to the blacklist.
   # Valid entries can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html#enum-constant-summary
   potions:
-    blacklist-enabled: true
+    blacklist_enabled: true
     blacklist:
       - STRENGTH
       - LONG_STRENGTH
@@ -21,35 +22,36 @@ items:
 # In the real double life series, there's just one Enchantment Table.
 # Players are also unable to craft bookshelves.
 enchantments:
-  table-craftable: false
-  table-breakable: false
+  table_breakable: false
+  table_craftable: false
 
-  bookshelves-craftable: false
+  bookshelves_craftable: false
 
-  # Whether a max enchantment level of 2 is enforced by the plugin.
-  nerf: false
+  # The max enchantment level enforced by the plugin.
+  # Only applies to anvils. Set to 0 to disable.
+  max_level: 2
 
 
 
 # Toggle custom recipes. All of these were present in the real double life series.
-custom-recipes:
-  spore-blossom: true
-  name-tag: true
+custom_recipes:
+  spore_blossom: true
+  name_tag: true
   saddle: true
-  paper-tnt: true
+  paper_tnt: true
 
 
 
 players:
   # The maximum (and default) amount of lives.
-  max-lives: 3
+  max_lives: 3
 
   # Whether soulmates are revealed when randomizing pairs.
-  reveal-soulmates: false
+  reveal_soulmates: false
 
   # Whether a harmless lightning bolt should be cast at a player's last location when they run out of lives
-  lightning-on-death: true
+  lightning_on_death: true
 
   # Whether offline players should be killed immediately upon rejoining if their soulmate dies
   # (Will give the player a notice in chat explaining why they've been killed)
-  kill-on-rejoin: false
+  kill_on_rejoin: false

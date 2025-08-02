@@ -1,0 +1,13 @@
+[
+  {
+    "position": 20,
+    "item": "LEASH",
+    "name": "Item Configuration",
+    "lore": "View settings for toggling items",
+    "chatColor": "BOLD+GREEN",
+    "action": {
+      "type": "NAVIGATE",
+      "destination": "items_config"
+    }
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "position": 21,
+    "field": "items.break_helmets",
+    "item": "IRON_HELMET",
+    "name": {
+      "text": "Break Helmets",
+      "color": "BOLD+WHITE"
+    },
+    "lore": [
+      "Whether helmets should break passively when worn (happens quickly).",
+      "{{value}}"
+    ],
+    "action": {
+      "type": "CONFIG_TOGGLE"
+    }
+  },
+  {
+    "position": 23,
+    "field": "items.potions.blacklist_enabled",
+    "item": "WATER_BOTTLE",
+    "name": {
+      "text": "Toggle Potion Blacklist",
+      "color": "BOLD+AQUA"
+    },
+    "lore": [
+      "Whether the potion blacklist is enabled",
+      "{{value}}",
+      " ",
+      "The blacklist itself can't be edited from in-game"
+    ],
+    "action": {
+      "type": "CONFIG_TOGGLE"
+    }
+  },
+  {
+    "position": 24,
+    "field": "items.potions.blacklist",
+    "item": "WATER_BOTTLE",
+    "name": {
+      "text": "Modify Potion Blacklist",
+      "color": "BOLD+BROWN"
+    },
+    "lore": [
+      "Blacklist individual potions. Current blacklist:",
+      "{{listValue}}"
+    ],
+    "action": {
+      "type": "CONFIG_LIST",
+      "expect": "STRING_LIST",
+      "prompt": [
+        "BOLD+GREEN+Please send a list of names to add to the potion blacklist. If a sent potion is already on the list, it will be removed.",
+        "GREEN+A list of valid names may be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html#enum-constant-summary",
+        "GREEN+The list must be formatted exactly like this:",
+        "RED+NAME,NAME,NAME"
+      ]
+    }
+  },
+  {
+    "position": 31,
+    "field": "items.clear_golden_apples",
+    "item": "GOLDEN_APPLE",
+    "name": {
+      "text": "Clear Golden Apples",
+      "color": "BOLD+GOLD"
+    },
+    "lore": [
+      "What types of golden apple should be cleared",
+      "{{value}}"
+    ],
+    "valueMapTo": {
+      "0": "Don't clear any type of golden apple",
+      "1": "Clear enchanted golden apples",
+      "2": "Clear both types of golden apple"
+    },
+    "action": {
+      "type": "CONFIG_CHAT",
+      "expect": "INT",
+      "prompt": [
+        "BOLD+GREEN+Please select an option by sending a number between 0 and 2.",
+        "GREEN+0 - Don't clear any type of golden apple",
+        "YELLOW+1 - Clear enchanted golden apples",
+        "RED+2 - Clear both types of golden apple"
+      ]
+    }
+  }
+]

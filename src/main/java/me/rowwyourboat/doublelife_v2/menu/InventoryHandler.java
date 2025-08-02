@@ -38,13 +38,13 @@ public class InventoryHandler implements Listener {
         pages.add(new Page("MAIN_MENU", "Main Menu", 54, MainMenu.getContent()));
     }
 
-    @EventHandler
-    private void onInventoryClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        Inventory inventory = event.getInventory();
-        Player player = (Player) event.getWhoClicked();
-        DoubleLife.instance.getLogger().info(event.getWhoClicked().getName());
+//    @EventHandler
+//    private void onInventoryClick(InventoryClickEvent event) {
+//        event.setCancelled(true);
+//        Inventory inventory = event.getInventory();
+//        Player player = (Player) event.getWhoClicked();
+//        DoubleLife.instance.getLogger().info(event.getWhoClicked().getName());
 //        if (inventory != currentPage.get(player.getUniqueId()).getInventory()) return;
-    }
+//    }
 
 }

@@ -1,0 +1,25 @@
+[
+  {
+    "position": 20,
+    "item": "COMMAND_BLOCK",
+    "name": "Configuration",
+    "lore": "Configure the plugin",
+    "chatColor": "BOLD+GOLD",
+    "glint": true,
+    "action": {
+      "type": "NAVIGATE",
+      "destination": "configuration"
+    }
+  },
+  {
+    "position": 21,
+    "item": "PLAYER_HEAD",
+    "name": "Players",
+    "lore": "Manage players",
+    "chatColor": "BOLD+RED",
+    "action": {
+      "type": "NAVIGATE",
+      "destination": "players"
+    }
+  }
+]
