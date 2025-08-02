@@ -1,0 +1,19 @@
+[
+  {
+    "title": "Main Menu",
+    "content": "main-menu.json"
+  },
+  {
+    "title": "Configuration",
+    "template": "NORMAL",
+    "backButton": true,
+    "content": [
+      {
+        "item": "REDSTONE",
+        "name": "Change Lives",
+        "lore": "Change the default amount of lives",
+        "position": 20
+      }
+    ]
+  }
+]

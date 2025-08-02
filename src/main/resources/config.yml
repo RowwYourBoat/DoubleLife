@@ -1,108 +1,55 @@
-config-version: 3
-
-####### Gamerules #########################################################################################
-#### These settings will be applied when you run the '/dl setup' command!
-gamerules:
-  spectators-generate-chunks: false
-  announce-advancements: false
-  do-weather-cycle: false
-  do-insomnia: false
-  players-sleeping-percentage: 100
-  random-tick-speed: 6
-  spawn-radius: 0
-
-
-
-
-
-####### Items #########################################################################################
-#### You're able to ban specific items which also aren't allowed in the
-#### real series, like helmets.
+# Toggle items.
 items:
-  ban-helmets: true
-  ban-god-apples: true
+  # Whether helmets should break passively when worn. Happens very quickly.
+  break-helmets: true
 
-  ## You may whitelist potions by adding their enum name to the list.
-  ## For help, refer to the wiki: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html
+  # If set to true, `clear-god-apples` is ignored.
+  clear-golden-apples: false
+  clear-god-apples: true
+
+  # You may disable potions by adding them to the blacklist.
+  # Valid entries can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html#enum-constant-summary
   potions:
-    whitelist-enabled: true
-    whitelist:
-      - WATER
-      - AWKWARD
-      - MUNDANE
-      - INVISIBILITY
-      - SPEED
-      - FIRE_RESISTANCE
-      - NIGHT_VISION
+    blacklist-enabled: true
+    blacklist:
+      - STRENGTH
+      - LONG_STRENGTH
+      - STRONG_STRENGTH
 
 
 
-
-
-####### Enchantments #########################################################################################
-#### In the real double life series, there's just one Enchantment Table.
-#### Players are also unable to craft bookshelves.
-#### You may change this here if you'd like.
+# In the real double life series, there's just one Enchantment Table.
+# Players are also unable to craft bookshelves.
 enchantments:
-  enchantment-table-craftable: false
-  enchantment-table-breakable: false
+  table-craftable: false
+  table-breakable: false
+
   bookshelves-craftable: false
 
-  ## Enabling this setting will make all dropped Enchantment Tables unbreakable when dropped as an item.
-  ## E.x. it can't burn in lava or be blown up.
-  enchantment-table-indestructible-on-drop: true
-
-  ## Enabling this setting will result in all enchanted items being maxed out at level 2 when combined in an anvil.
-  nerf-enchantment-stacking: false
+  # Whether a max enchantment level of 2 is enforced by the plugin.
+  nerf: false
 
 
 
-
-
-####### Custom Recipes #########################################################################################
-#### Because the world's size is very limited, there are custom recipes to
-#### allow for easier access to resources like TNT, saddles and name tags.
-recipes:
-  craftable-spore-blossom: true
-  craftable-name-tag: true
-  craftable-saddle: true
+# Toggle custom recipes. All of these were present in the real double life series.
+custom-recipes:
+  spore-blossom: true
+  name-tag: true
+  saddle: true
   paper-tnt: true
 
 
 
-
-
-####### Miscellaneous #########################################################################################
-#### A section for settings which don't fall under another category.
-misc:
-  ## The amount of lives everyone starts off with as well as the maximum amount.
+players:
+  # The maximum (and default) amount of lives.
   max-lives: 3
 
-  ## Enabling this setting will reveal everyone's soulmate
-  ## upon running the '/dl randomizepairs' command.
+  # Whether soulmates are revealed when randomizing pairs.
   reveal-soulmates: false
 
-  ## Enabling this setting will cause all players to have their spawnpoint
-  ## set to the location they get teleported to after running the
-  ## '/dl distributeplayers' command.
-  set-spawn-point-at-distributed-location: false
+  # Whether a harmless lightning bolt should be cast at a player's last location when they run out of lives
+  lightning-on-death: true
 
-  ## Enabling this setting will cause players to banned as soon as they
-  ## run out of lives. Useful for if you don't want spectators.
-  ban-players-upon-losing: false
-
-  ## When a player dies as a red name, a global explosion sound
-  ## will play when this setting is enabled. This means that
-  ## every player can hear it, no matter their location.
-  global-explosion-sound-on-final-death: true
-
-  ## If your soulmate dies while you're offline,
-  ## you will be killed by the plugin upon rejoining
-  ## when this setting is enabled.
-  kill-soulmate-on-join-if-offline-during-death: false
-
-  ## Will only be applied when running the '/dl setup' command!
-  border-size: 700.0
-
-  ## Kills all existing villagers and prevents new ones from spawning when enabled.
-  kill-villagers: false
+  # Whether offline players should be killed immediately upon rejoining if their soulmate dies
+  # (Will give the player a notice in chat explaining why they've been killed)
+  kill-on-rejoin: false
