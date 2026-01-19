@@ -1,17 +1,17 @@
 [
   {
-    "id": "main_menu",
+    "id": "MAIN_MENU",
     "title": "Main Menu",
     "size": 54
   },
   {
-    "id": "configuration",
+    "id": "CONFIGURATION",
     "title": "Configuration",
     "backButton": true,
     "size": 54
   },
   {
-    "id": "items_config",
+    "id": "ITEMS_CONFIG",
     "title": "Item Configuration",
     "backButton": true,
     "size": 54

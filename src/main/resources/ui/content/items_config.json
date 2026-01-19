@@ -46,7 +46,7 @@
       "{{listValue}}"
     ],
     "action": {
-      "type": "CONFIG_LIST",
+      "type": "CONFIG_CHAT_LIST",
       "expect": "STRING_LIST",
       "prompt": [
         "BOLD+GREEN+Please send a list of names to add to the potion blacklist. If a sent potion is already on the list, it will be removed.",

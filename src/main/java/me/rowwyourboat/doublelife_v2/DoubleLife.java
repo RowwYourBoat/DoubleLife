@@ -1,6 +1,5 @@
 package me.rowwyourboat.doublelife_v2;
 
-import me.rowwyourboat.doublelife_v2.menu.CommandHandler;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 

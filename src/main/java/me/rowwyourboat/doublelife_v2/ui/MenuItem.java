@@ -1,4 +1,4 @@
-package me.rowwyourboat.doublelife_v2.menu;
+package me.rowwyourboat.doublelife_v2.ui;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

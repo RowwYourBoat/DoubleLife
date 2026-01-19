@@ -7,7 +7,7 @@
     "chatColor": "BOLD+GREEN",
     "action": {
       "type": "NAVIGATE",
-      "destination": "items_config"
+      "destination": "ITEMS_CONFIG"
     }
   }
 ]

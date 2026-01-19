@@ -1,7 +1,6 @@
-package me.rowwyourboat.doublelife_v2.menu;
+package me.rowwyourboat.doublelife_v2;
 
-import me.rowwyourboat.doublelife_v2.DoubleLife;
-import org.bukkit.Bukkit;
+import me.rowwyourboat.doublelife_v2.ui.InventoryHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,15 +16,13 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
     public CommandHandler() {
         this.inventoryHandler = new InventoryHandler();
-
-        Bukkit.getPluginManager().registerEvents(this.inventoryHandler, DoubleLife.instance);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return this.sendError(sender, ChatColor.DARK_RED + "Only players can run this command.");
 
-        this.inventoryHandler.openMainMenu(player);
+        this.inventoryHandler.openInventory(player, "main_menu");
         return true;
     }
 

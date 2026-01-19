@@ -8,7 +8,7 @@
     "glint": true,
     "action": {
       "type": "NAVIGATE",
-      "destination": "configuration"
+      "destination": "CONFIGURATION"
     }
   },
   {
@@ -19,7 +19,7 @@
     "chatColor": "BOLD+RED",
     "action": {
       "type": "NAVIGATE",
-      "destination": "players"
+      "destination": "PLAYERS"
     }
   }
 ]
