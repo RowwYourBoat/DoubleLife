@@ -93,7 +93,7 @@ public class PairHealth implements Listener {
 
         SaveHandler.setPairHealth(damagedPlayer, healthToSet);
         if ((soulmate != null) && !soulmate.isDead()) {
-            double maxHealth = soulmate.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            double maxHealth = soulmate.getAttribute(Attribute.MAX_HEALTH).getValue();
             if (healthToSet >= maxHealth)
                 healthToSet = maxHealth;
             else if (healthToSet <= 0.0)
@@ -118,7 +118,7 @@ public class PairHealth implements Listener {
         Player soulmate = SaveHandler.getSoulmate(healedPlayer);
         SaveHandler.setPairHealth(healedPlayer, healthToSet);
         if (soulmate != null && !soulmate.isDead()) {
-            double maxHealth = soulmate.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            double maxHealth = soulmate.getAttribute(Attribute.MAX_HEALTH).getValue();
             if (healthToSet >= maxHealth)
                 healthToSet = maxHealth;
             else if (healthToSet <= 0.0)

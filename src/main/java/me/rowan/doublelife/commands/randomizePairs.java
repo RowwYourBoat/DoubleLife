@@ -62,7 +62,7 @@ public class randomizePairs {
                 if (playerOneUUID != playerTwoUUID) {
                     availablePlayers.remove(playerOneUUID);
                     availablePlayers.remove(playerTwoUUID);
-                    SaveHandler.createPair(playerOneUUID, playerTwoUUID, DoubleLife.plugin.getConfig().getInt("max-lives"));
+                    SaveHandler.createPair(playerOneUUID, playerTwoUUID, DoubleLife.plugin.getConfig().getInt("misc.max-lives"));
 
                     Player playerOne = Bukkit.getPlayer(playerOneUUID);
                     Player playerTwo = Bukkit.getPlayer(playerTwoUUID);

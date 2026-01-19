@@ -25,11 +25,11 @@ public class setup {
 
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, DoubleLife.plugin.getConfig().getInt("gamerules.random-tick-speed"));
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, DoubleLife.plugin.getConfig().getBoolean("gamerules.spectators-generate-chunks"));
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, DoubleLife.plugin.getConfig().getBoolean("gamerules.do-weather-cycle"));
-        world.setGameRule(GameRule.DO_INSOMNIA, DoubleLife.plugin.getConfig().getBoolean("gamerules.do-insomnia"));
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, DoubleLife.plugin.getConfig().getBoolean("gamerules.announce-advancements"));
+        world.setGameRule(GameRule.ADVANCE_WEATHER, DoubleLife.plugin.getConfig().getBoolean("gamerules.do-weather-cycle"));
+        world.setGameRule(GameRule.SPAWN_PHANTOMS, DoubleLife.plugin.getConfig().getBoolean("gamerules.do-insomnia"));
+        world.setGameRule(GameRule.SHOW_ADVANCEMENT_MESSAGES, DoubleLife.plugin.getConfig().getBoolean("gamerules.announce-advancements"));
         world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, DoubleLife.plugin.getConfig().getInt("gamerules.players-sleeping-percentage"));
-        world.setGameRule(GameRule.SPAWN_RADIUS, DoubleLife.plugin.getConfig().getInt("gamerules.spawn-radius"));
+        world.setGameRule(GameRule.RESPAWN_RADIUS, DoubleLife.plugin.getConfig().getInt("gamerules.spawn-radius"));
 
         world.setSpawnLocation(player.getLocation());
         world.getWorldBorder().setCenter(player.getLocation());

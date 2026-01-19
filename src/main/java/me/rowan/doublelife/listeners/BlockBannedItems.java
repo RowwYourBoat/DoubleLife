@@ -217,7 +217,7 @@ public class BlockBannedItems implements Listener {
         if (!DoubleLife.plugin.getConfig().getBoolean("enchantments.enchantment-table-indestructible-on-drop"))
             return;
         for (Entity entity : event.getDamager().getNearbyEntities(10,10,10)) {
-            if (entity.getType() == EntityType.DROPPED_ITEM){
+            if (entity.getType() == EntityType.ITEM){
                 if (entity.getCustomName() != null) {
                     if (entity.getCustomName().equalsIgnoreCase("Invulnerable")) {
                         event.setCancelled(true);

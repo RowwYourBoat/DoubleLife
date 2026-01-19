@@ -6,12 +6,12 @@
 
     <groupId>me.rowan</groupId>
     <artifactId>DoubleLife</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1+1.21.11</version>
     <packaging>jar</packaging>
 
     <name>DoubleLife</name>
 
-    <description>A recreation of the mod/plugin used in the official Double Life series hosted by Grian!</description>
+    <description>A recreation of the mod used in the official Double Life series hosted by Grian!</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
