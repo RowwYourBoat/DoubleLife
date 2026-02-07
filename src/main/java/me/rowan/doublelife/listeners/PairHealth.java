@@ -1,7 +1,7 @@
 package me.rowan.doublelife.listeners;
 
 import me.rowan.doublelife.DoubleLife;
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
@@ -34,14 +34,14 @@ public class PairHealth implements Listener {
             return;
         }
 
-        Player soulmate = SaveHandler.getSoulmate(playerWhoDied);
+        Player soulmate = SaveManager.getSoulmate(playerWhoDied);
         if (justHadALifeRemoved.contains(playerWhoDied.getUniqueId()))
             return;
         justHadALifeRemoved.add(playerWhoDied.getUniqueId());
         if (soulmate != null && !justHadALifeRemoved.contains(soulmate.getUniqueId())) {
             justHadALifeRemoved.add(soulmate.getUniqueId());
         } else if (soulmate == null && DoubleLife.plugin.getConfig().getBoolean("misc.kill-soulmate-on-join-if-offline-during-death")) {
-            OfflinePlayer offlineSoulmate = SaveHandler.getOfflineSoulmate(playerWhoDied);
+            OfflinePlayer offlineSoulmate = SaveManager.getOfflineSoulmate(playerWhoDied);
             if ((offlineSoulmate != null) && !soulmateDiedWhileOffline.contains(offlineSoulmate.getUniqueId()))
                 soulmateDiedWhileOffline.add(offlineSoulmate.getUniqueId());
         }
@@ -51,14 +51,14 @@ public class PairHealth implements Listener {
             if (soulmate != null)
                 justHadALifeRemoved.remove(soulmate.getUniqueId());
         }, 20);
-        int currentLivesAmount = SaveHandler.getPairLivesAmount(playerWhoDied);
-        SaveHandler.setPairLivesAmount(playerWhoDied, (currentLivesAmount - 1));
+        int currentLivesAmount = SaveManager.getPairLivesAmount(playerWhoDied);
+        SaveManager.setPairLivesAmount(playerWhoDied, (currentLivesAmount - 1));
 
         if (currentLivesAmount - 1 == 0 && DoubleLife.plugin.getConfig().getBoolean("misc.global-explosion-sound-on-final-death")){
             for (Player player : Bukkit.getOnlinePlayers())
                 player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
         }
-        SaveHandler.setPairHealth(playerWhoDied, 20.0);
+        SaveManager.setPairHealth(playerWhoDied, 20.0);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -67,7 +67,7 @@ public class PairHealth implements Listener {
         if (soulmateDiedWhileOffline.contains(playerWhoDied.getUniqueId()))
             return;
 
-        Player soulmate = SaveHandler.getSoulmate(playerWhoDied);
+        Player soulmate = SaveManager.getSoulmate(playerWhoDied);
         Bukkit.getScheduler().runTaskLater(DoubleLife.plugin, () -> {
             if ((soulmate != null) && !soulmate.isDead()){
                 soulmate.setHealth(0);
@@ -86,12 +86,12 @@ public class PairHealth implements Listener {
             return;
 
         double finalDamage = event.getFinalDamage();
-        double currentHealth = SaveHandler.getPairHealth(damagedPlayer);
+        double currentHealth = SaveManager.getPairHealth(damagedPlayer);
 
-        Player soulmate = SaveHandler.getSoulmate(damagedPlayer);
+        Player soulmate = SaveManager.getSoulmate(damagedPlayer);
         double healthToSet = currentHealth - finalDamage;
 
-        SaveHandler.setPairHealth(damagedPlayer, healthToSet);
+        SaveManager.setPairHealth(damagedPlayer, healthToSet);
         if ((soulmate != null) && !soulmate.isDead()) {
             double maxHealth = soulmate.getAttribute(Attribute.MAX_HEALTH).getValue();
             if (healthToSet >= maxHealth)
@@ -112,11 +112,11 @@ public class PairHealth implements Listener {
 
         Player healedPlayer = (Player) event.getEntity();
         double healAmount = event.getAmount();
-        double currentHealth = SaveHandler.getPairHealth(healedPlayer);
+        double currentHealth = SaveManager.getPairHealth(healedPlayer);
         double healthToSet = currentHealth + healAmount;
 
-        Player soulmate = SaveHandler.getSoulmate(healedPlayer);
-        SaveHandler.setPairHealth(healedPlayer, healthToSet);
+        Player soulmate = SaveManager.getSoulmate(healedPlayer);
+        SaveManager.setPairHealth(healedPlayer, healthToSet);
         if (soulmate != null && !soulmate.isDead()) {
             double maxHealth = soulmate.getAttribute(Attribute.MAX_HEALTH).getValue();
             if (healthToSet >= maxHealth)
@@ -148,7 +148,7 @@ public class PairHealth implements Listener {
     public void synchronizeHealthAfterJoining(PlayerJoinEvent event){
         Player player = event.getPlayer();
 
-        double pairHealth = SaveHandler.getPairHealth(player);
+        double pairHealth = SaveManager.getPairHealth(player);
         if (pairHealth > 0)
             player.setHealth(pairHealth);
     }

@@ -1,4 +1,6 @@
-# Double Life
+# Double Life V2
+
+<span style="color:red">Please note that V2 is NOT compatible with V1. Updating from V1 to V2 will wipe your configuration and saved data.</span>
 
 ### Introduction
 

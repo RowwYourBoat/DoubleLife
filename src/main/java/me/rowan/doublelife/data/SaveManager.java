@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SaveHandler {
+public class SaveManager {
 
     public static File saveFile;
     public static YamlConfiguration saveYaml;

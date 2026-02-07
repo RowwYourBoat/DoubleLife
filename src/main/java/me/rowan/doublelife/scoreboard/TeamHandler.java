@@ -1,7 +1,7 @@
 package me.rowan.doublelife.scoreboard;
 
 import me.rowan.doublelife.DoubleLife;
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,9 +62,9 @@ public class TeamHandler implements Listener {
                 if (team.hasEntry(player.getName()))
                     onTeam = true;
             }
-            String pair = SaveHandler.getPair(player);
+            String pair = SaveManager.getPair(player);
             if (pair != null && !onTeam)
-                changePlayerTeamAccordingly(pair, SaveHandler.getPairLivesAmount(player));
+                changePlayerTeamAccordingly(pair, SaveManager.getPairLivesAmount(player));
         }
     }
 
@@ -110,7 +110,7 @@ public class TeamHandler implements Listener {
     @EventHandler
     public void updatePlayerTeamOnJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        int amountOfLives = SaveHandler.getPairLivesAmount(player);
+        int amountOfLives = SaveManager.getPairLivesAmount(player);
         if (amountOfLives == -1)
             return;
         modifyTeamAndGameMode(player, amountOfLives);

@@ -1,19 +1,4 @@
-config-version: 3
-
-####### Gamerules #########################################################################################
-#### These settings will be applied when you run the '/dl setup' command!
-gamerules:
-  spectators-generate-chunks: false
-  announce-advancements: false
-  do-weather-cycle: false
-  do-insomnia: false
-  players-sleeping-percentage: 100
-  random-tick-speed: 6
-  spawn-radius: 0
-
-
-
-
+config-version: 2.0.0
 
 ####### Items #########################################################################################
 #### You're able to ban specific items which also aren't allowed in the
@@ -75,17 +60,12 @@ recipes:
 ####### Miscellaneous #########################################################################################
 #### A section for settings which don't fall under another category.
 misc:
-  ## The amount of lives everyone starts off with as well as the maximum amount.
+  ## The number of lives everyone starts off with as well as the maximum amount.
   max-lives: 3
 
   ## Enabling this setting will reveal everyone's soulmate
   ## upon running the '/dl randomizepairs' command.
   reveal-soulmates: false
-
-  ## Enabling this setting will cause all players to have their spawnpoint
-  ## set to the location they get teleported to after running the
-  ## '/dl distributeplayers' command.
-  set-spawn-point-at-distributed-location: false
 
   ## Enabling this setting will cause players to banned as soon as they
   ## run out of lives. Useful for if you don't want spectators.
@@ -100,9 +80,6 @@ misc:
   ## you will be killed by the plugin upon rejoining
   ## when this setting is enabled.
   kill-soulmate-on-join-if-offline-during-death: false
-
-  ## Will only be applied when running the '/dl setup' command!
-  border-size: 700.0
 
   ## Kills all existing villagers and prevents new ones from spawning when enabled.
   kill-villagers: false

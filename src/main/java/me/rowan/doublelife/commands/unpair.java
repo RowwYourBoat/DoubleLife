@@ -1,6 +1,6 @@
 package me.rowan.doublelife.commands;
 
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,12 +22,12 @@ public class unpair {
             return true;
         }
 
-        if (SaveHandler.getPair(player) == null){
+        if (SaveManager.getPair(player) == null){
             sender.sendMessage(ChatColor.DARK_RED + "That player doesn't have a soulmate!");
             return true;
         }
 
-        SaveHandler.deletePair(player);
+        SaveManager.deletePair(player);
         sender.sendMessage(ChatColor.DARK_GREEN + "You've successfully unpaired " + player.getName() + "!");
         return true;
     }

@@ -1,6 +1,6 @@
 package me.rowan.doublelife.listeners;
 
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -20,12 +20,12 @@ public class ShareEffects implements Listener {
         Player player = (Player) event.getEntity();
         if (event.getOldEffect() == null && event.getNewEffect() != null){
             PotionEffect effect = event.getNewEffect();
-            Player soulmate = SaveHandler.getSoulmate(player);
+            Player soulmate = SaveManager.getSoulmate(player);
             if (soulmate != null)
                 soulmate.addPotionEffect(effect);
         } else if (event.getNewEffect() == null && event.getOldEffect() != null){
             PotionEffect effect = event.getOldEffect();
-            Player soulmate = SaveHandler.getSoulmate(player);
+            Player soulmate = SaveManager.getSoulmate(player);
             if (soulmate != null)
                 soulmate.removePotionEffect(effect.getType());
         }
@@ -38,7 +38,7 @@ public class ShareEffects implements Listener {
             return;
 
         Player player = event.getPlayer();
-        Player soulmate = SaveHandler.getSoulmate(player);
+        Player soulmate = SaveManager.getSoulmate(player);
         if (soulmate != null) {
             for (PotionEffect effect : soulmate.getActivePotionEffects())
                 soulmate.removePotionEffect(effect.getType());

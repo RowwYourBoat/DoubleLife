@@ -1,6 +1,6 @@
 package me.rowan.doublelife.commands;
 
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -27,7 +27,7 @@ public class setLives {
             return false;
         }
 
-        boolean successful = SaveHandler.setPairLivesAmount(playerArgument, livesToSet);
+        boolean successful = SaveManager.setPairLivesAmount(playerArgument, livesToSet);
         if (!successful) {
             sender.sendMessage(ChatColor.DARK_RED + ChatColor.BOLD.toString() + "That player either doesn't have a soulmate, or the lives input was invalid!");
             return true;

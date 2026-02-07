@@ -1,6 +1,6 @@
 package me.rowan.doublelife.commands;
 
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -38,12 +38,12 @@ public class pair {
             return true;
         }
 
-        if (SaveHandler.getPair(playerOne) != null || SaveHandler.getPair(playerTwo) != null) {
+        if (SaveManager.getPair(playerOne) != null || SaveManager.getPair(playerTwo) != null) {
             sender.sendMessage(ChatColor.DARK_RED + "One of those players is already paired!");
             return true;
         }
 
-        SaveHandler.createPair(playerOne.getUniqueId(), playerTwo.getUniqueId(), lives);
+        SaveManager.createPair(playerOne.getUniqueId(), playerTwo.getUniqueId(), lives);
         sender.sendMessage(ChatColor.DARK_GREEN + "You've successfully paired " + playerOne.getName() + " with " + playerTwo.getName() + "!");
 
         return true;

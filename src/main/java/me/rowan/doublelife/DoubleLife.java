@@ -1,8 +1,8 @@
 package me.rowan.doublelife;
 
 import me.rowan.doublelife.commands.*;
-import me.rowan.doublelife.data.ConfigHandler;
-import me.rowan.doublelife.data.SaveHandler;
+import me.rowan.doublelife.data.ConfigManager;
+import me.rowan.doublelife.data.SaveManager;
 import me.rowan.doublelife.listeners.BlockBannedItems;
 import me.rowan.doublelife.listeners.ChatFormat;
 import me.rowan.doublelife.listeners.PairHealth;
@@ -28,13 +28,10 @@ import java.util.List;
 
 public final class DoubleLife extends JavaPlugin {
 
+    public static final String version = "2.0.0";
     public static JavaPlugin plugin;
 
-    public static ConfigHandler ConfigHandler;
-
     public static Collection<NamespacedKey> recipeKeys;
-
-    int configVersion = 3;
 
     public void createRecipes(){
 
@@ -95,8 +92,8 @@ public final class DoubleLife extends JavaPlugin {
         int pluginId = 16819;
         new Metrics(plugin, pluginId);
 
-        ConfigHandler = new ConfigHandler();
-        SaveHandler.construct();
+        ConfigManager.init();
+        SaveManager.construct();
 
         plugin.getCommand("doublelife").setExecutor(new mainCommandExecutor());
         plugin.getCommand("doublelife").setTabCompleter(new mainTabCompleter());
