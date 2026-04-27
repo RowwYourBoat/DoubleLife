@@ -2,10 +2,8 @@ package me.rowan.doublelife.scoreboard;
 
 import me.rowan.doublelife.DoubleLife;
 import me.rowan.doublelife.data.SaveManager;
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import org.bukkit.*;
+import org.bukkit.ban.ProfileBanList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,90 +11,77 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Set;
+import java.util.Date;
 import java.util.UUID;
 
 public class TeamHandler implements Listener {
 
-    Team extraLivesTeam;
-    Team threeLivesTeam;
-    Team twoLivesTeam;
-    Team oneLifeTeam;
-    Team spectatorTeam;
+    private final static int numberOfTeams = 5;
+    private final static Team[] teamArray = new Team[numberOfTeams];
+    private final static ChatColor[] teamColorsArray = { ChatColor.GRAY, ChatColor.RED, ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN };
 
     public static Scoreboard scoreboard;
 
     public TeamHandler() {
         if (Bukkit.getScoreboardManager() != null) {
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        }
-        else
+        } else {
             Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[DoubleLife] Please restart the server for the plugin to create the required teams properly!");
-
-        if (scoreboard.getTeams().toArray().length > 0) {
-            for (Team team : scoreboard.getTeams())
-                team.unregister();
+            return;
         }
 
-        extraLivesTeam = scoreboard.registerNewTeam("extraLives");
-        threeLivesTeam = scoreboard.registerNewTeam("threeLives");
-        twoLivesTeam = scoreboard.registerNewTeam("twoLives");
-        oneLifeTeam = scoreboard.registerNewTeam("oneLife");
-        spectatorTeam = scoreboard.registerNewTeam("spectator");
-        extraLivesTeam.setColor(ChatColor.DARK_GREEN);
-        extraLivesTeam.setCanSeeFriendlyInvisibles(false);
-        threeLivesTeam.setColor(ChatColor.GREEN);
-        threeLivesTeam.setCanSeeFriendlyInvisibles(false);
-        twoLivesTeam.setColor(ChatColor.YELLOW);
-        twoLivesTeam.setCanSeeFriendlyInvisibles(false);
-        oneLifeTeam.setColor(ChatColor.RED);
-        oneLifeTeam.setCanSeeFriendlyInvisibles(false);
-        spectatorTeam.setColor(ChatColor.GRAY);
+        if (!scoreboard.getTeams().isEmpty()) {
+            for (Team team : scoreboard.getTeams()) {
+                team.unregister();
+            }
+        }
 
-        Set<Team> teamSet = scoreboard.getTeams();
+        for (int i = 0; i < teamArray.length; i++) {
+            Team newTeam = scoreboard.registerNewTeam(String.valueOf(i));
+            newTeam.setCanSeeFriendlyInvisibles(false);
+            newTeam.setColor(teamColorsArray[i]);
+            teamArray[i] = newTeam;
+        }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setPlayerListName(null);
-            boolean onTeam = false;
-            for (Team team : teamSet){
-                if (team.hasEntry(player.getName()))
-                    onTeam = true;
-            }
             String pair = SaveManager.getPair(player);
-            if (pair != null && !onTeam)
-                changePlayerTeamAccordingly(pair, SaveManager.getPairLivesAmount(player));
+            if (pair == null) { return; }
+            changePlayerTeamAccordingly(pair, SaveManager.getPairLivesAmount(player));
         }
     }
 
     public static void modifyTeamAndGameMode(Player player, Integer livesAmount) {
-        if (player != null){
-            if (livesAmount == 0) {
-                player.setGameMode(GameMode.SPECTATOR);
-                scoreboard.getTeam("spectator").addEntry(player.getName());
-                if (DoubleLife.plugin.getConfig().getBoolean("misc.ban-players-upon-losing")) {
-                    Bukkit.getBanList(BanList.Type.NAME).addBan(player.getName(), "You've been banned because the server owner has configured the server to do so after you lose all of your lives!", null, "DoubleLife");
-                    player.kickPlayer("You've been banned because you're out of lives!");
-                }
-            } else if (livesAmount == 1) {
-                player.setGameMode(GameMode.SURVIVAL);
-                scoreboard.getTeam("oneLife").addEntry(player.getName());
-            } else if (livesAmount == 2) {
-                player.setGameMode(GameMode.SURVIVAL);
-                scoreboard.getTeam("twoLives").addEntry(player.getName());
-            } else if (livesAmount == 3) {
-                player.setGameMode(GameMode.SURVIVAL);
-                scoreboard.getTeam("threeLives").addEntry(player.getName());
-            } else if (livesAmount >= 4) {
-                player.setGameMode(GameMode.SURVIVAL);
-                scoreboard.getTeam("extraLives").addEntry(player.getName());
-            } else if (livesAmount == -1) { // for if the player's pair has been removed
-                for (Team team : scoreboard.getTeams()) {
-                    if (team.hasEntry(player.getName()))
-                        team.removeEntry(player.getName());
-                }
-                player.setGameMode(GameMode.SURVIVAL);
+        if (player == null) { return; }
+
+        if (livesAmount == -1) {
+            // If the player's pair has been removed
+            player.setDisplayName(null);
+            for (Team team : teamArray) {
+                team.removeEntry(player.getName());
             }
+            return;
         }
+
+        int colourIndex = Math.clamp(livesAmount, 0, 4);
+        String teamName = String.valueOf(colourIndex);
+        Team newTeam = scoreboard.getTeam(teamName);
+        if (newTeam == null) { return; }
+
+        player.setDisplayName(teamColorsArray[colourIndex] + player.getName());
+        newTeam.addEntry(player.getName());
+
+        boolean shouldBanEliminated = DoubleLife.instance.getConfig().getBoolean("misc.ban-players-upon-losing");
+        if (livesAmount == 0) {
+            player.setGameMode(GameMode.SPECTATOR);
+            if (shouldBanEliminated) {
+                ProfileBanList profileBanList = Bukkit.getBanList(BanList.Type.PROFILE);
+                profileBanList.addBan(player.getPlayerProfile(), ChatColor.RED + "You're eliminated!", (Date) null, "DoubleLife");
+                player.kickPlayer(ChatColor.RED + "You've been banned because you're out of lives!");
+            }
+            return;
+        }
+
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public static void changePlayerTeamAccordingly(String pair, Integer newLivesAmount) {
@@ -107,12 +92,16 @@ public class TeamHandler implements Listener {
         modifyTeamAndGameMode(playerTwo, newLivesAmount);
     }
 
+    public static ChatColor livesNumberToColor(int livesNum) {
+        int colourIndex = Math.clamp(livesNum, 0, 4);
+        return teamColorsArray[colourIndex];
+    }
+
     @EventHandler
     public void updatePlayerTeamOnJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         int amountOfLives = SaveManager.getPairLivesAmount(player);
-        if (amountOfLives == -1)
-            return;
+        if (amountOfLives == -1) { return; }
         modifyTeamAndGameMode(player, amountOfLives);
     }
 

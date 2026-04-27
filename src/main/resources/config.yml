@@ -1,85 +1,96 @@
-config-version: 2.0.0
+config-version: 4
 
-####### Items #########################################################################################
-#### You're able to ban specific items which also aren't allowed in the
-#### real series, like helmets.
-items:
-  ban-helmets: true
-  ban-god-apples: true
-
-  ## You may whitelist potions by adding their enum name to the list.
-  ## For help, refer to the wiki: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html
-  potions:
-    whitelist-enabled: true
-    whitelist:
-      - WATER
-      - AWKWARD
-      - MUNDANE
-      - INVISIBILITY
-      - SPEED
-      - FIRE_RESISTANCE
-      - NIGHT_VISION
-
-
-
-
-
-####### Enchantments #########################################################################################
-#### In the real double life series, there's just one Enchantment Table.
-#### Players are also unable to craft bookshelves.
-#### You may change this here if you'd like.
-enchantments:
-  enchantment-table-craftable: false
-  enchantment-table-breakable: false
-  bookshelves-craftable: false
-
-  ## Enabling this setting will make all dropped Enchantment Tables unbreakable when dropped as an item.
-  ## E.x. it can't burn in lava or be blown up.
-  enchantment-table-indestructible-on-drop: true
-
-  ## Enabling this setting will result in all enchanted items being maxed out at level 2 when combined in an anvil.
-  nerf-enchantment-stacking: false
-
-
-
-
-
-####### Custom Recipes #########################################################################################
-#### Because the world's size is very limited, there are custom recipes to
-#### allow for easier access to resources like TNT, saddles and name tags.
-recipes:
-  craftable-spore-blossom: true
-  craftable-name-tag: true
-  craftable-saddle: true
-  paper-tnt: true
-
-
-
-
-
-####### Miscellaneous #########################################################################################
-#### A section for settings which don't fall under another category.
-misc:
-  ## The number of lives everyone starts off with as well as the maximum amount.
-  max-lives: 3
-
-  ## Enabling this setting will reveal everyone's soulmate
-  ## upon running the '/dl randomizepairs' command.
+## General settings.
+season:
+  # The number of lives players start off with as well as the maximum amount.
+  lives: 3
+  # The size of the world border. Set to -1 to disable.
+  border-size: 700
+  # Whether the plugin should reveal everyone's soulmate upon randomization.
   reveal-soulmates: false
+  # Whether eliminated players should be banned from the server.
+  ban-spectators: false
+  # Whether a title should be displayed when a player is eliminated and (harmless) lightning should strike at the player's last location.
+  announce-eliminations: true
 
-  ## Enabling this setting will cause players to banned as soon as they
-  ## run out of lives. Useful for if you don't want spectators.
-  ban-players-upon-losing: false
 
-  ## When a player dies as a red name, a global explosion sound
-  ## will play when this setting is enabled. This means that
-  ## every player can hear it, no matter their location.
-  global-explosion-sound-on-final-death: true
+## Settings regarding the enchanting table.
+enchanting-table:
+  # Whether the enchanting table is craftable.
+  craftable: false
+  # Whether the enchanting table is breakable.
+  breakable: true
+  # Whether the enchanting table should be made immune to damage when dropped as an item.
+  # Also prevents it from despawning.
+  indestructible-on-drop: true
 
-  ## If your soulmate dies while you're offline,
-  ## you will be killed by the plugin upon rejoining
-  ## when this setting is enabled.
-  kill-soulmate-on-join-if-offline-during-death: false
 
-  ## Kills all existing villagers and prevents new ones from spawning when enabled.
-  kill-villagers: false
+# Apply a max enchantment level to items from chest loot, villager trades, enchantment tables and anvils.
+# Has no effect on already acquired items or existing villagers.
+# Set to -1 to disable.
+nerf-enchantments:
+  max-level: 1
+  enchants:
+    - PROTECTION_ENVIRONMENTAL
+
+
+disabled-enchantments:
+  - LOOT_BONUS_BLOCKS
+  - LOOT_BONUS_MOBS
+
+
+## Add custom recipes here. See the examples for reference.
+## Valid item names are specified on this web page under 'Enum Constants': https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html#enum-constant-summary
+## If the recipe requires empty slots; use 'AIR' as the item name.
+custom-recipes:
+  # This first entry is for the classic Paper TNT recipe.
+  # The key 'TNT' is the output item.
+  # Shapeless is 'false' in this case, meaning the materials must be laid out in a specific way in the crafting grid.
+  # The required materials are specified under 'grid' as if it were the 3x3 crafting grid.
+  # The number of spaces doesn't matter, as long as each material is separated by a pipe ('|') symbol.
+  TNT:
+    shapeless: false
+    grid:
+      - PAPER | SAND      | PAPER
+      - SAND  | GUNPOWDER | SAND
+      - PAPER | SAND      | PAPER
+  # This second entry is for the name tag recipe.
+  # The key 'NAME_TAG' is the output item.
+  # Shapeless is 'true' in this case, meaning it doesn't matter how the materials are laid out in the crafting grid.
+  # The required materials are specified under 'materials' as a simple list.
+  NAME_TAG:
+    shapeless: true
+    materials:
+      - STRING
+      - PAPER
+
+
+## Specify any item to blacklist here.
+## They won't be craftable, tradeable or generated in chest loot.
+## Valid entries are specified on this web page under 'Enum Constants': https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html#enum-constant-summary
+item-blacklist:
+  enabled: true
+  items:
+    - LEATHER_HELMET
+    - CHAINMAIL_HELMET
+    - COPPER_HELMET
+    - GOLDEN_HELMET
+    - IRON_HELMET
+    - DIAMOND_HELMET
+    - NETHERITE_HELMET
+    - TURTLE_HELMET
+    - ENCHANTED_GOLDEN_APPLE
+    - BOOKSHELF
+
+
+## Specify any potion effect to blacklist here.
+## They won't be brewable, craftable (tipped arrows), tradeable or generated in chest loot.
+## Valid entries are specified on this web page under 'Enum Constants': https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionType.html#enum-constant-summary
+potion-blacklist:
+  enabled: true
+  effects:
+    - HARMING
+    - STRONG_HARMING
+    - STRENGTH
+    - LONG_STRENGTH
+    - STRONG_STRENGTH

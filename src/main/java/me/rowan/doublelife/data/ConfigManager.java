@@ -18,21 +18,21 @@ public class ConfigManager {
 
     public static void init() {
         yamlConfig = new YamlConfiguration();
-        configFile = new File(DoubleLife.plugin.getDataFolder(), "config.yml");
+        configFile = new File(DoubleLife.instance.getDataFolder(), "config.yml");
         saveConfigFile();
         loadConfig();
     }
 
     private static void saveConfigFile() {
         configFile.getParentFile().mkdirs();
-        DoubleLife.plugin.saveResource("config.yml", false);
+        DoubleLife.instance.saveResource("config.yml", false);
     }
 
     private static void loadConfig() {
         try {
             yamlConfig.load(configFile);
         } catch (Exception e) {
-            DoubleLife.plugin.getLogger().severe("Could not load config.yml, default config will be used.");
+            DoubleLife.instance.getLogger().severe("Could not load config.yml, default config will be used.");
         }
     }
 

@@ -10,11 +10,9 @@ commands:
   doublelife:
     permission: doublelife.admin
     description: Prefix to all Double Life related commands
-    usage: /doublelife help
+    usage: Run '/dl help' to view available commands and their syntax
     aliases:
       - dl
-      - doublel
-      - dlife
 
 permissions:
   doublelife.admin:

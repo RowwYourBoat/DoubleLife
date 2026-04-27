@@ -1,180 +1,194 @@
 package me.rowan.doublelife;
 
 import me.rowan.doublelife.commands.*;
-import me.rowan.doublelife.data.ConfigManager;
 import me.rowan.doublelife.data.SaveManager;
-import me.rowan.doublelife.listeners.BlockBannedItems;
-import me.rowan.doublelife.listeners.ChatFormat;
-import me.rowan.doublelife.listeners.PairHealth;
-import me.rowan.doublelife.listeners.ShareEffects;
+import me.rowan.doublelife.listeners.*;
 import me.rowan.doublelife.scoreboard.TeamHandler;
-import me.rowan.doublelife.util.commandArguments;
+import me.rowan.doublelife.util.CommandHelper;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public final class DoubleLife extends JavaPlugin {
 
-    public static final String version = "2.0.0";
-    public static JavaPlugin plugin;
-
-    public static Collection<NamespacedKey> recipeKeys;
-
-    public void createRecipes(){
-
-        if (plugin.getConfig().getBoolean("recipes.craftable-saddle")) {
-            ItemStack saddle = new ItemStack(Material.SADDLE, 1);
-            NamespacedKey saddleKey = new NamespacedKey(plugin, "saddle");
-            ShapedRecipe saddleRecipe = new ShapedRecipe(saddleKey, saddle);
-            saddleRecipe.shape("LLL", " X ", "X X");
-            saddleRecipe.setIngredient('X', Material.LEATHER);
-            Bukkit.addRecipe(saddleRecipe);
-            recipeKeys.add(saddleKey);
-        }
-
-        if (plugin.getConfig().getBoolean("recipes.craftable-name-tag")) {
-            ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
-            NamespacedKey nameTagKey = new NamespacedKey(plugin, "name_tag");
-            ShapedRecipe nameTagRecipe = new ShapedRecipe(nameTagKey, nameTag);
-            nameTagRecipe.shape("XXX", " S ", " P ");
-            nameTagRecipe.setIngredient('S', Material.STRING);
-            nameTagRecipe.setIngredient('P', Material.PAPER);
-            Bukkit.addRecipe(nameTagRecipe);
-            recipeKeys.add(nameTagKey);
-        }
-
-        if (plugin.getConfig().getBoolean("recipes.paper-tnt")) {
-            ItemStack TNT = new ItemStack(Material.TNT, 1);
-            NamespacedKey TNTKey = new NamespacedKey(plugin, "paper_tnt");
-            ShapedRecipe TNTRecipe = new ShapedRecipe(TNTKey, TNT);
-            TNTRecipe.shape("PSP", "SGS", "PSP");
-            TNTRecipe.setIngredient('P', Material.PAPER);
-            TNTRecipe.setIngredient('S', Material.SAND);
-            TNTRecipe.setIngredient('G', Material.GUNPOWDER);
-            Bukkit.addRecipe(TNTRecipe);
-            recipeKeys.add(TNTKey);
-        }
-
-        if (plugin.getConfig().getBoolean("recipes.craftable-spore-blossom")) {
-            ItemStack sporeBlossom = new ItemStack(Material.SPORE_BLOSSOM, 1);
-            NamespacedKey sporeBlossomKey = new NamespacedKey(plugin, "spore_blossom");
-            ShapedRecipe sporeBlossomRecipe = new ShapedRecipe(sporeBlossomKey, sporeBlossom);
-            sporeBlossomRecipe.shape("  M", " L ", "XXX");
-            sporeBlossomRecipe.setIngredient('M', Material.MOSS_BLOCK);
-            sporeBlossomRecipe.setIngredient('L', Material.LILAC);
-            Bukkit.addRecipe(sporeBlossomRecipe);
-            recipeKeys.add(sporeBlossomKey);
-        }
-
-        for (Player player : Bukkit.getOnlinePlayers())
-            for (NamespacedKey key : recipeKeys)
-                player.discoverRecipe(key);
-
-    }
+    public static DoubleLife instance;
+    private HashMap<NamespacedKey, ShapedRecipe> recipeMap;
 
     @Override
     public void onEnable() {
-        plugin = this;
+        instance = this;
+        new Metrics(this, 16819);
 
-        int pluginId = 16819;
-        new Metrics(plugin, pluginId);
+        saveDefaultConfig();
+        SaveManager.init();
 
-        ConfigManager.init();
-        SaveManager.construct();
+        this.registerCommands();
+        this.registerEventListeners();
+        this.checkForUpdates();
 
-        plugin.getCommand("doublelife").setExecutor(new mainCommandExecutor());
-        plugin.getCommand("doublelife").setTabCompleter(new mainTabCompleter());
+        this.recipeMap = this.createRecipes();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            this.playerDiscoverRecipes(player);
+        }
+    }
 
-        Bukkit.getPluginManager().registerEvents(new TeamHandler(), plugin);
-        Bukkit.getPluginManager().registerEvents(new PairHealth(), plugin);
-        Bukkit.getPluginManager().registerEvents(new ShareEffects(), plugin);
-        Bukkit.getPluginManager().registerEvents(new BlockBannedItems(), plugin);
-        Bukkit.getPluginManager().registerEvents(new ChatFormat(), plugin);
+    private void registerCommands() {
+        PluginCommand pluginCommand = getCommand("doublelife");
+        if (pluginCommand == null) { return; }
+        pluginCommand.setExecutor(new MainCommandExecutor());
+        pluginCommand.setTabCompleter(new MainTabCompleter());
+    }
 
-        BlockBannedItems.startKillVillagersLoop();
+    private void registerEventListeners() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
 
-        recipeKeys = new ArrayList<>();
-        createRecipes();
+        Listener[] listeners = {
+            new TeamHandler(),
+            new SyncHealth(),
+            new SyncEffects(),
+            new BlockBannedItems(),
+            new EnchantmentTableEvents(),
+            new NerfEnchantments()
+        };
 
-        new UpdateChecker(plugin).getVersion(version -> {
+        for (Listener listener : listeners) {
+            pluginManager.registerEvents(listener, this);
+        }
+    }
+
+    private void checkForUpdates() {
+        new UpdateChecker(this).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("The plugin is up to date!");
             } else {
-                getLogger().severe("There is a newer version available!  Running: " + this.getDescription().getVersion() + "  Newest: " + version);
-                getLogger().severe("You may download it here: https://modrinth.com/plugin/double-life");
+                getLogger().warning(String.format(
+                    """
+                    \nThere is a newer version available! Updating will improve functionality and stability.
+                    Running: %s  Newest: %s
+                    You may download it here: https://modrinth.com/plugin/double-life
+                    """,
+                    this.getDescription().getVersion(),
+                    version
+                ));
             }
         });
 
-        if (getConfig().getInt("config-version") != configVersion) {
-            getLogger().warning("Your configuration file is " + (this.configVersion - getConfig().getInt("config-version")) + " version(s) behind!");
-            getLogger().warning("To be able to access the newly added settings, please delete the current config.yml file and restart/reload the server!");
+        Configuration configDefaults = getConfig().getDefaults();
+        if (configDefaults == null) { return; }
+        int newConfigVersion = configDefaults.getInt("config-version");
+        int configVersion = getConfig().getInt("config-version");
+        if (newConfigVersion > configVersion) {
+            getLogger().warning(
+                """
+                \nThe configuration file is outdated! This means new settings have been added that you are currently unable to access.
+                To access these new settings; please delete the config.yml file and restart the server.
+                """
+            );
         }
     }
 
-    public class mainCommandExecutor implements CommandExecutor {
+    private ShapedRecipe createShapedRecipe(ItemStack result, String key, String... recipeShape) {
+        NamespacedKey recipeKey = new NamespacedKey(this, key);
+        ShapedRecipe newShapedRecipe = new ShapedRecipe(recipeKey, result);
+        newShapedRecipe.shape(recipeShape);
+        return newShapedRecipe;
+    }
+
+    private HashMap<NamespacedKey, ShapedRecipe> createRecipes() {
+        HashMap<NamespacedKey, ShapedRecipe> newRecipeMap = new HashMap<>();
+
+        if (getConfig().getBoolean("recipes.craftable-saddle")) {
+            ShapedRecipe saddleRecipe = this.createShapedRecipe(new ItemStack(Material.SADDLE, 1), "saddle", "   ", " L ", "L L");
+            saddleRecipe.setIngredient('L', Material.LEATHER);
+            newRecipeMap.put(saddleRecipe.getKey(), saddleRecipe);
+        }
+
+        if (getConfig().getBoolean("recipes.craftable-name-tag")) {
+            ShapedRecipe nameTagRecipe = this.createShapedRecipe(new ItemStack(Material.NAME_TAG, 1), "name_tag", "   ", " S ", "  P");
+            nameTagRecipe.setIngredient('S', Material.STRING);
+            nameTagRecipe.setIngredient('P', Material.PAPER);
+            newRecipeMap.put(nameTagRecipe.getKey(), nameTagRecipe);
+        }
+
+        if (getConfig().getBoolean("recipes.paper-tnt")) {
+            ShapedRecipe TNTRecipe = this.createShapedRecipe(new ItemStack(Material.TNT, 1), "paper_tnt", "PSP", "SGS", "PSP");
+            TNTRecipe.setIngredient('P', Material.PAPER);
+            TNTRecipe.setIngredient('S', Material.SAND);
+            TNTRecipe.setIngredient('G', Material.GUNPOWDER);
+            newRecipeMap.put(TNTRecipe.getKey(), TNTRecipe);
+        }
+
+        if (getConfig().getBoolean("recipes.craftable-spore-blossom")) {
+            ShapedRecipe sporeBlossomRecipe = this.createShapedRecipe(new ItemStack(Material.SPORE_BLOSSOM, 1), "spore_blossom", "  M", " L ", "   ");
+            sporeBlossomRecipe.setIngredient('M', Material.MOSS_BLOCK);
+            sporeBlossomRecipe.setIngredient('L', Material.LILAC);
+            newRecipeMap.put(sporeBlossomRecipe.getKey(), sporeBlossomRecipe);
+        }
+
+        for (ShapedRecipe recipe : newRecipeMap.values()) {
+            Bukkit.addRecipe(recipe);
+        }
+        return newRecipeMap;
+    }
+
+    public void playerDiscoverRecipes(Player player) {
+        for (ShapedRecipe recipe : this.recipeMap.values()) {
+            player.discoverRecipe(recipe.getKey());
+        }
+    }
+
+    public static class MainCommandExecutor implements CommandExecutor {
 
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (args.length < 1)
-                return false;
+            if (args.length < 1) { return false; }
 
-            if (args[0].equalsIgnoreCase("setup"))
-                return setup.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("randomizepairs"))
-                return randomizePairs.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("pair"))
-                return pair.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("unpair"))
-                return unpair.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("setLives"))
-                return setLives.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("distributeplayers"))
-                return distributePlayers.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("help"))
-                return help.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("reload"))
-                return reload.onCommand(sender, command, label, args);
-            else if (args[0].equalsIgnoreCase("config"))
-                return config.onCommand(sender, command, label, args);
+            switch (args[0].toLowerCase()) {
+                case "randomizepairs" -> RandomizePairs.onCommand(sender, args);
+                case "pair" -> Pair.onCommand(sender, args);
+                case "unpair" -> Unpair.onCommand(sender, args);
+                case "lives" -> Lives.onCommand(sender, args);
+                case "distributeplayers" -> DistributePlayers.onCommand();
+                case "help" -> Help.onCommand(sender);
+                case "reload" -> Reload.onCommand(sender);
+                case "config" -> Config.onCommand(sender, args);
+                default -> { return false; }
+            };
 
-            return false;
+            return true;
         }
 
     }
 
-    public class mainTabCompleter implements TabCompleter {
+    public static class MainTabCompleter implements TabCompleter {
 
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+            if (!command.getName().equalsIgnoreCase("doublelife") || !sender.hasPermission("doublelife.admin")) { return List.of(); }
 
-            if (command.getName().equalsIgnoreCase("doublelife") && sender.hasPermission("doublelife.admin")){
-                if (args.length == 1)
-                    return commandArguments.getAdministrativeCommands();
-
-                if (args[0].equalsIgnoreCase("pair"))
-                    return pair.getAppropriateArguments(args);
-                else if (args[0].equalsIgnoreCase("unpair"))
-                    return unpair.getAppropriateArguments(args);
-                else if (args[0].equalsIgnoreCase("setLives"))
-                    return setLives.getAppropriateArguments(args);
-                else if (args[0].equalsIgnoreCase("config"))
-                    return config.getAppropriateArguments(args);
+            if (args.length == 1) {
+                return CommandHelper.getAdministrativeCommands();
             }
 
-            return new ArrayList<>();
+            return switch (args[0].toLowerCase()) {
+                case "pair" -> Pair.getAppropriateArguments(args);
+                case "unpair" -> Unpair.getAppropriateArguments(args);
+                case "lives" -> Lives.getAppropriateArguments(args);
+                case "config" -> Config.getAppropriateArguments(args);
+                default -> List.of();
+            };
         }
 
     }

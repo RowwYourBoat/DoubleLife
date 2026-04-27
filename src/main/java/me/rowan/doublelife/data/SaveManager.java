@@ -18,14 +18,15 @@ public class SaveManager {
     public static File saveFile;
     public static YamlConfiguration saveYaml;
 
-    public static void construct() {
-        saveFile = new File(DoubleLife.plugin.getDataFolder(), "save.yml");
+    public static void init() {
+        saveFile = new File(DoubleLife.instance.getDataFolder(), "save.yml");
         saveYaml = YamlConfiguration.loadConfiguration(saveFile);
         if (!saveFile.exists()){
             saveYaml.set("soulmates", new ArrayList<String>());
-            List<String> comments = new ArrayList<>();
-            comments.add("Save Format:");
-            comments.add("firstPlayerUUID : secondPlayerUUID : Health : Lives");
+            List<String> comments = new ArrayList<>(List.of(
+                "Save Format:",
+                "firstPlayerUUID : secondPlayerUUID : Health : Lives"
+            ));
             saveYaml.setComments("soulmates", comments);
             save();
         }
@@ -56,18 +57,19 @@ public class SaveManager {
         String finalStringToSave = "";
         finalStringToSave = finalStringToSave + firstUUID + " : " + secondUUID + " : 20.0 : " + livesAmount;
 
-        ArrayList<String> savedPairs = (ArrayList<String>) saveYaml.get("soulmates");
+        List<String> savedPairs = saveYaml.getStringList("soulmates");
         savedPairs.add(finalStringToSave);
         saveYaml.set("soulmates", savedPairs);
+        save();
 
         TeamHandler.changePlayerTeamAccordingly(finalStringToSave, livesAmount);
-        save();
     }
 
     public static void deletePair(Player pairMember){
         String pair = getPair(pairMember);
+        if (pair == null) { return; }
 
-        ArrayList<String> savedPairs = (ArrayList<String>) saveYaml.get("soulmates");
+        List<String> savedPairs = saveYaml.getStringList("soulmates");
         savedPairs.remove(pair);
         saveYaml.set("soulmates", savedPairs);
         save();
@@ -76,48 +78,49 @@ public class SaveManager {
     }
 
     public static String getPair(Player pairMember) {
-        ArrayList<String> savedPairs = (ArrayList<String>) saveYaml.get("soulmates");
+        List<String> savedPairs = saveYaml.getStringList("soulmates");
         String playerUUID = pairMember.getUniqueId().toString();
-        for(String pair : savedPairs){
+
+        for (String pair : savedPairs) {
             String[] splitString = pair.split(" : ");
             String firstUUID = splitString[0];
             String secondUUID = splitString[1];
-            if(firstUUID.equals(playerUUID) || secondUUID.equals(playerUUID))
-                return pair;
+            if (firstUUID.equals(playerUUID) || secondUUID.equals(playerUUID)) { return pair; }
         }
+
         return null;
     }
 
     public static Player getSoulmate(Player player) {
         String pair = getPair(player);
-        if (pair == null)
-            return null;
+        if (pair == null) { return null; }
 
         String[] splitMessage = pair.split(" : ");
         Player soulmate;
-        if (splitMessage[0].equals(player.getUniqueId().toString()))
+        if (splitMessage[0].equals(player.getUniqueId().toString())) {
             soulmate = Bukkit.getPlayer(UUID.fromString(splitMessage[1]));
-        else if (splitMessage[1].equals(player.getUniqueId().toString()))
+        } else if (splitMessage[1].equals(player.getUniqueId().toString())) {
             soulmate = Bukkit.getPlayer(UUID.fromString(splitMessage[0]));
-        else
+        } else {
             return null;
+        }
 
         return soulmate;
     }
 
     public static OfflinePlayer getOfflineSoulmate(Player player) {
         String pair = getPair(player);
-        if (pair == null)
-            return null;
+        if (pair == null) { return null; }
 
         String[] splitMessage = pair.split(" : ");
         OfflinePlayer offlineSoulmate;
-        if (splitMessage[0].equals(player.getUniqueId().toString()))
+        if (splitMessage[0].equals(player.getUniqueId().toString())) {
             offlineSoulmate = Bukkit.getOfflinePlayer(UUID.fromString(splitMessage[1]));
-        else if (splitMessage[1].equals(player.getUniqueId().toString()))
+        } else if (splitMessage[1].equals(player.getUniqueId().toString())) {
             offlineSoulmate = Bukkit.getOfflinePlayer(UUID.fromString(splitMessage[0]));
-        else
+        } else {
             return null;
+        }
 
         return offlineSoulmate;
     }
@@ -131,26 +134,26 @@ public class SaveManager {
         return -1;
     }
 
-    public static boolean setPairLivesAmount(Player pairMember, Integer amount) {
-        if (amount > DoubleLife.plugin.getConfig().getInt("misc.max-lives") || amount < 0)
-            return false;
+    public static void setPairLivesAmount(Player pairMember, Integer amount) {
+        if (amount > DoubleLife.instance.getConfig().getInt("misc.max-lives") || amount < 0) { return; }
 
         int currentAmountOfLives = getPairLivesAmount(pairMember);
-        if (currentAmountOfLives == -1)
-            return false;
+        if (currentAmountOfLives == -1) { return; }
 
-        ArrayList<String> savedPairs = (ArrayList<String>) saveYaml.get("soulmates");
+        List<String> savedPairs = saveYaml.getStringList("soulmates");
         String pair = getPair(pairMember);
+
+        if (pair == null) { return; }
 
         String[] splitMessage = pair.split(" : ");
         String newPair = splitMessage[0] + " : " + splitMessage[1] + " : " + splitMessage[2] + " : " + amount;
 
         savedPairs.remove(pair);
         savedPairs.add(newPair);
+        saveYaml.set("soulmates", savedPairs);
         save();
 
         TeamHandler.changePlayerTeamAccordingly(newPair, amount);
-        return true;
     }
 
     public static double getPairHealth(Player pairMember) {
@@ -163,21 +166,22 @@ public class SaveManager {
     }
 
     public static void setPairHealth(Player pairMember, Double healthToSet){
-        ArrayList<String> savedPairs = (ArrayList<String>) saveYaml.get("soulmates");
+        List<String> savedPairs = saveYaml.getStringList("soulmates");
         String pair = getPair(pairMember);
-        if (pair == null)
-            return;
+        if (pair == null) { return; }
 
-        if (healthToSet <= 0.0)
+        if (healthToSet <= 0.0) {
             healthToSet = 0.0;
-        else if (healthToSet >= 20.0)
+        } else if (healthToSet >= 20.0) {
             healthToSet = 20.0;
+        }
 
         String[] splitMessage = pair.split(" : ");
         String newPair = splitMessage[0] + " : " + splitMessage[1] + " : " + healthToSet + " : " + splitMessage[3];
 
         savedPairs.remove(pair);
         savedPairs.add(newPair);
+        saveYaml.set("soulmates", savedPairs);
         save();
     }
 

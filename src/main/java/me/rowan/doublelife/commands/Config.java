@@ -1,44 +1,42 @@
 package me.rowan.doublelife.commands;
 
 import me.rowan.doublelife.DoubleLife;
-import me.rowan.doublelife.data.ConfigManager;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class config {
+public class Config {
 
-    public static boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length < 2)
-            return false;
+    public static void onCommand(CommandSender sender, String[] args) {
+        if (args.length < 2) { return; }
+        DoubleLife plugin = DoubleLife.instance;
 
         if (!argumentIsLegal(args[1].toLowerCase())) {
             sender.sendMessage(ChatColor.DARK_RED + "Illegal setting argument! That setting can't be changed from within the game!");
-            return true;
+            return;
         }
 
         if (args.length < 3) {
             sender.sendMessage(ChatColor.DARK_RED + "Missing arguments!");
-            return true;
+            return;
         }
 
         String settingToChange = args[1].toLowerCase();
         String newValue = args[2].toLowerCase();
-        if (!DoubleLife.plugin.getConfig().contains(settingToChange)) {
+        if (!DoubleLife.instance.getConfig().contains(settingToChange)) {
             sender.sendMessage(ChatColor.DARK_RED + "That setting doesn't exist.");
-            return true;
+            return;
         }
 
-        if (DoubleLife.plugin.getConfig().get(settingToChange).toString().equalsIgnoreCase("false") || DoubleLife.plugin.getConfig().get(settingToChange).toString().equalsIgnoreCase("true")) {
+        if (plugin.getConfig().get(settingToChange).toString().equalsIgnoreCase("false") || plugin.getConfig().get(settingToChange).toString().equalsIgnoreCase("true")) {
             if (newValue.equalsIgnoreCase("false") || newValue.equalsIgnoreCase("true")){
-                DoubleLife.plugin.getConfig().set(settingToChange, Boolean.parseBoolean(newValue));
+                plugin.getConfig().set(settingToChange, Boolean.parseBoolean(newValue));
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "That setting is a boolean value!");
-                return true;
+                return;
             }
         } else {
             int newValueInt;
@@ -46,21 +44,21 @@ public class config {
                 newValueInt = Integer.parseInt(newValue);
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "That setting is a number value!");
-                return true;
+                return;
             }
-            DoubleLife.plugin.getConfig().set(settingToChange, newValueInt);
+            plugin.getConfig().set(settingToChange, newValueInt);
         }
 
+        plugin.saveConfig();
+        plugin.reloadConfig();
         sender.sendMessage(ChatColor.DARK_GREEN + "You've successfully changed the setting " + ChatColor.GREEN + settingToChange + ChatColor.DARK_GREEN + " to " + ChatColor.GREEN + newValue + ChatColor.DARK_GREEN + "!");
-        DoubleLife.plugin.saveConfig();
-        DoubleLife.plugin.reloadConfig();
-        return true;
     }
 
     public static List<String> getAppropriateArguments(String[] args){
+        DoubleLife plugin = DoubleLife.instance;
         List<String> finalArguments = new ArrayList<>();
 
-        Set<String> settings = DoubleLife.plugin.getConfig().getValues(true).keySet();
+        Set<String> settings = plugin.getConfig().getValues(true).keySet();
         if (args.length == 2) {
             settings.forEach(setting -> {
                 if (argumentIsLegal(setting))
@@ -68,13 +66,13 @@ public class config {
             });
         } else if (args.length == 3) {
             String setting = args[1];
-            if (setting != null && DoubleLife.plugin.getConfig().contains(setting.toLowerCase())) {
+            if (setting != null && plugin.getConfig().contains(setting.toLowerCase())) {
                 if (argumentIsLegal(setting.toLowerCase())) {
-                    if (DoubleLife.plugin.getConfig().get(setting.toLowerCase()).toString().equalsIgnoreCase("false") || DoubleLife.plugin.getConfig().get(setting.toLowerCase()).toString().equalsIgnoreCase("true")) {
+                    if (plugin.getConfig().get(setting.toLowerCase()).toString().equalsIgnoreCase("false") || plugin.getConfig().get(setting.toLowerCase()).toString().equalsIgnoreCase("true")) {
                         finalArguments.add("true");
                         finalArguments.add("false");
                     } else {
-                        finalArguments.add("num");
+                        finalArguments.add("<number>");
                     }
                 }
             }
@@ -84,7 +82,8 @@ public class config {
     }
 
     private static boolean argumentIsLegal(String setting) {
-        return !setting.equalsIgnoreCase("gamerules") && !setting.equalsIgnoreCase("items") && !setting.equalsIgnoreCase("items.potions") && !setting.equalsIgnoreCase("items.potions.whitelist") && !setting.equalsIgnoreCase("enchantments") && !setting.equalsIgnoreCase("recipes") && !setting.equalsIgnoreCase("misc") && !setting.equalsIgnoreCase("config-version");
+        List<String> illegalArguments = List.of("gamerules", "items", "items.potions", "items.potions.whitelist", "enchantments", "recipes", "misc", "config-version");
+        return !illegalArguments.contains(setting);
     }
 
 }
